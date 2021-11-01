@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -27,6 +28,8 @@ namespace TeleSharp
         public TelegramClient(TelegramConfiguration configuration)
         {
             _configuration = configuration;
+            if (string.IsNullOrEmpty(configuration.SessionName))
+                throw new ArgumentNullException(nameof(configuration.SessionName));
 
             _client = new TdClient();
             _client.Bindings.SetLogVerbosityLevel(0);
@@ -80,6 +83,8 @@ namespace TeleSharp
         private async void OnStateChanged(Enums.AuthorizationState state)
         {
             _authorizationState = state;
+            if (state == Enums.AuthorizationState.Ready)
+                await _client.GetChatsAsync(null, long.MaxValue, 0, 1000);
             AuthorizationStateChanged?.Invoke(this, new(_client, state));
         }
 
@@ -89,28 +94,44 @@ namespace TeleSharp
             {
                 //Authorization logic below 
                 case TdApi.Update.UpdateAuthorizationState updateAuthorizationState when updateAuthorizationState.AuthorizationState.GetType() == typeof(TdApi.AuthorizationState.AuthorizationStateWaitTdlibParameters):
-                    await _client.ExecuteAsync(new TdApi.SetTdlibParameters
                     {
-                        Parameters = new TdApi.TdlibParameters
+                        string dbDir = string.Empty;
+                        if (string.IsNullOrEmpty(_configuration.DatabaseDirectory)) dbDir = Path.Combine(Environment.CurrentDirectory, _configuration.SessionName);
+                        else dbDir = Path.Combine(_configuration.DatabaseDirectory, _configuration.SessionName);
+
+                        if (!Directory.Exists(dbDir))
+                            Directory.CreateDirectory(dbDir);
+
+                        string filesDir = string.Empty;
+                        if (string.IsNullOrEmpty(_configuration.DatabaseDirectory)) filesDir = Path.Combine(Environment.CurrentDirectory, _configuration.SessionName, "files");
+                        else filesDir = Path.Combine(_configuration.FilesDirectory, _configuration.SessionName);
+
+                        if (!Directory.Exists(filesDir))
+                            Directory.CreateDirectory(filesDir);
+
+                        await _client.ExecuteAsync(new TdApi.SetTdlibParameters
                         {
-                            ApiId = _configuration.ApiId,
-                            ApiHash = _configuration.ApiHash,
-                            ApplicationVersion = _configuration.ApplicationVersion,
-                            DeviceModel = _configuration.DeviceModel,
-                            SystemLanguageCode = _configuration.SystemLanguageCode,
-                            SystemVersion = _configuration.SystemVersion,
-                            DatabaseDirectory = _configuration.DatabaseDirectory,
-                            FilesDirectory = _configuration.FilesDirectory,
-                            IgnoreFileNames = _configuration.IgnoreFileNames,
-                            EnableStorageOptimizer = _configuration.EnableStorageOptimizer,
-                            UseChatInfoDatabase = _configuration.UseChatInfoDatabase,
-                            UseFileDatabase = _configuration.UseFileDatabase,
-                            UseMessageDatabase = _configuration.UseMessageDatabase,
-                            UseSecretChats = _configuration.UseSecretChats,
-                            UseTestDc = _configuration.UseTestDc
-                        }
-                    });
-                    break;
+                            Parameters = new TdApi.TdlibParameters
+                            {
+                                ApiId = _configuration.ApiId,
+                                ApiHash = _configuration.ApiHash,
+                                ApplicationVersion = _configuration.ApplicationVersion,
+                                DeviceModel = _configuration.DeviceModel,
+                                SystemLanguageCode = _configuration.SystemLanguageCode,
+                                SystemVersion = _configuration.SystemVersion,
+                                DatabaseDirectory = dbDir,
+                                FilesDirectory = filesDir,
+                                IgnoreFileNames = _configuration.IgnoreFileNames,
+                                EnableStorageOptimizer = _configuration.EnableStorageOptimizer,
+                                UseChatInfoDatabase = _configuration.UseChatInfoDatabase,
+                                UseFileDatabase = _configuration.UseFileDatabase,
+                                UseMessageDatabase = _configuration.UseMessageDatabase,
+                                UseSecretChats = _configuration.UseSecretChats,
+                                UseTestDc = _configuration.UseTestDc
+                            }
+                        });
+                        break;
+                    }
                 case TdApi.Update.UpdateAuthorizationState updateAuthorizationState when updateAuthorizationState.AuthorizationState.GetType() == typeof(TdApi.AuthorizationState.AuthorizationStateWaitEncryptionKey):
                     await _client.ExecuteAsync(new TdApi.CheckDatabaseEncryptionKey());
                     break;
