@@ -37,7 +37,7 @@ namespace TeleSharp.UpdateHandling
             }
             catch (Exception ex)
             {
-               Console.WriteLine(ex);
+                Console.WriteLine(ex);
             }
             await Task.CompletedTask;
         }
@@ -48,6 +48,8 @@ namespace TeleSharp.UpdateHandling
             var types = asm.GetTypes().Where(x => x.IsPublic && x.BaseType == typeof(BaseUpdateHandlerModule)).ToArray();
             foreach (var type in types)
             {
+                if (!type.GetConstructors().Any(x => x.IsPublic && x.GetParameters().Length == 0))
+                    throw new Exception($"{type.FullName} must have at least one public parameterless constructor");
                 var methods = type.GetMethods().Where(x => x.GetCustomAttribute<UpdateHandlerAttribute>() != null && x.IsPublic);
                 foreach (var method in methods)
                 {
