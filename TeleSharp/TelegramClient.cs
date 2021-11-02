@@ -55,15 +55,7 @@ namespace TeleSharp
             {
                 if (_configuration.BotToken != null)
                 {
-                    try
-                    {
-                        await _client.CheckAuthenticationBotTokenAsync(_configuration.BotToken);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-
+                    await _client.CheckAuthenticationBotTokenAsync(_configuration.BotToken);
                     return;
                 }
                 await _client.ExecuteAsync(new TdApi.SetAuthenticationPhoneNumber
