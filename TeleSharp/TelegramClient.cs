@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TdLib;
 using TeleSharp.Exceptions;
 using TeleSharp.Types;
+using TeleSharp.UpdateHandling;
 using static TdLib.TdApi;
 
 namespace TeleSharp
@@ -24,12 +25,14 @@ namespace TeleSharp
 
         private bool isBot => _configuration.BotToken != null;
 
+        private readonly UpdateHandler _updateHandler;
         internal readonly TdClient _client;
         public TelegramClient(TelegramConfiguration configuration)
         {
             _configuration = configuration;
             if (string.IsNullOrEmpty(configuration.SessionName))
                 throw new ArgumentNullException(nameof(configuration.SessionName));
+            _updateHandler = new UpdateHandler(this);
 
             _client = new TdClient();
             _client.Bindings.SetLogVerbosityLevel(0);
@@ -82,6 +85,11 @@ namespace TeleSharp
 
         private async void OnUpdateReceived(object sender, TdApi.Update update)
         {
+            Parallel.ForEach(_updateHandler._handlers.Where(x => x.TdUpdateType == update.GetType()), async (handler) =>
+            {
+                _ = _updateHandler.Execute(handler, update);
+            });
+
             switch (update)
             {
                 //Authorization logic below 
