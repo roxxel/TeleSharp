@@ -108,6 +108,7 @@ namespace TeleSharp
             tgClient.EnsureClientReady();
             var client = tgClient._client;
 
+            await client.GetChatAsync(chatId);
 
             var text = parseMode == ParseMode.None ?
                new FormattedText
