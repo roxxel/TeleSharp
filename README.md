@@ -5,4 +5,4 @@ Telergam MTProto Wrapper
 
 # Got any question?
 
-[![server](https://discord.com/api/guilds/905284563964686430/embed.png?style=banner2)](https://discord.gg/cwxjsM879V)
+[![server](https://discord.com/api/guilds/905284563964686430/widget.png?style=banner1)](https://discord.gg/cwxjsM879V)
