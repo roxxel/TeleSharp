@@ -80,8 +80,8 @@ namespace TeleSharp
         {
             _authorizationState = state;
             var me = await GetMeAsync();
-            if (me.Type.GetType() != typeof(UserType.UserTypeBot))
-                if (state == Enums.AuthorizationState.Ready)
+            if (state == Enums.AuthorizationState.Ready)
+                if (me.Type.GetType() != typeof(UserType.UserTypeBot))
                     await _client.GetChatsAsync(null, long.MaxValue, 0, 1000);
             AuthorizationStateChanged?.Invoke(this, new(_client, state));
         }
