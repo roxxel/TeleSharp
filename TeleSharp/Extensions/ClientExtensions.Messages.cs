@@ -47,7 +47,7 @@ namespace TeleSharp
                 DisableNotification = disableNotification,
             };
             if (scheduleDate != 0)
-                sendOptions.SchedulingState = scheduleDate < 0 
+                sendOptions.SchedulingState = scheduleDate < 0
                     ? new MessageSchedulingState.MessageSchedulingStateSendWhenOnline()
                     : new MessageSchedulingState.MessageSchedulingStateSendAtDate { SendDate = (int)scheduleDate };
 
@@ -58,7 +58,7 @@ namespace TeleSharp
         }
 
         //Todo: xml docs
-        public static async Task<Messages> ForwardMessages(this TelegramClient tgClient, 
+        public static async Task<Messages> ForwardMessages(this TelegramClient tgClient,
             long chatId,
             long fromChatId,
             IEnumerable<long> messageIds,
@@ -70,7 +70,7 @@ namespace TeleSharp
             tgClient.EnsureClientReady();
             var client = tgClient._client;
 
-
+            await client.GetChatAsync(chatId);
             var sendOptions = new MessageSendOptions
             {
                 DisableNotification = disableNotification,
@@ -80,7 +80,7 @@ namespace TeleSharp
                     ? new MessageSchedulingState.MessageSchedulingStateSendWhenOnline()
                     : new MessageSchedulingState.MessageSchedulingStateSendAtDate { SendDate = (int)scheduleDate };
 
-            return await client.ForwardMessagesAsync(chatId, fromChatId, messageIds.ToArray(), sendOptions, hideSenderName, hideCaption);
+            return await client.ForwardMessagesAsync(chatId, fromChatId, messageIds.Select(x => x * 1048576L).ToArray(), sendOptions, hideSenderName, hideCaption);
         }
 
         public static async Task<Messages> ForwardMessages(this TelegramClient tgClient,
@@ -129,8 +129,8 @@ namespace TeleSharp
 
             return await client.SendMessageAsync(chatId, 0, replyToMessageId, sendOptions, markup?.markup, new InputMessageContent.InputMessagePhoto
             {
-               Caption = text,
-               Photo = new InputFile.InputFileLocal { Path = photoPath  }
+                Caption = text,
+                Photo = new InputFile.InputFileLocal { Path = photoPath }
             });
         }
     }

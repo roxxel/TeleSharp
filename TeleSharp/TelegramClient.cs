@@ -43,6 +43,7 @@ namespace TeleSharp
 
         public event EventHandler<Types.AuthorizationStateChangedEventArgs> AuthorizationStateChanged;
 
+        public TdClient RawClient => _client;
 
         public async Task<User> GetMeAsync()
         {
