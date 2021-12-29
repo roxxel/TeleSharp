@@ -14,7 +14,7 @@ namespace TeleSharp
         {
             tgClient.EnsureClientReady();
             var _client = tgClient._client;
-            var chats = (await _client.GetChatsAsync(null, long.MaxValue, 0, 1000))
+            var chats = (await _client.GetChatsAsync(null, 1000))
                 .ChatIds.Select(async x => await _client.GetChatAsync(x))
                 .Select(t => t.Result);
             return chats;
