@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TDLib" Version="1.7.0" />
-    <PackageReference Include="tdlib.native" Version="1.7.0" />
+    <PackageReference Include="TDLib" Version="1.7.9" />
+    <PackageReference Include="tdlib.native" Version="1.7.9.1" />
   </ItemGroup>
 
 </Project>

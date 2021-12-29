@@ -83,7 +83,7 @@ namespace TeleSharp
             {
                 var me = await GetMeAsync();
                 if (me.Type.GetType() != typeof(UserType.UserTypeBot))
-                    await _client.GetChatsAsync(null, long.MaxValue, 0, 1000);
+                    await _client.GetChatsAsync(null, 1000);
             }
             AuthorizationStateChanged?.Invoke(this, new(_client, state));
         }
