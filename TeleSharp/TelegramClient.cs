@@ -21,6 +21,7 @@ namespace TeleSharp
         private ManualResetEventSlim _resetEvent = new();
         private bool _authNeeded;
         private Enums.AuthorizationState _authorizationState;
+        private User _me;
         private readonly TelegramConfiguration _configuration;
 
         private bool isBot => _configuration.BotToken != null;
@@ -44,6 +45,7 @@ namespace TeleSharp
         public event EventHandler<Types.AuthorizationStateChangedEventArgs> AuthorizationStateChanged;
 
         public TdClient RawClient => _client;
+        public User CurrentUser => _me;
 
         public async Task<User> GetMeAsync()
         {
@@ -81,8 +83,8 @@ namespace TeleSharp
             _authorizationState = state;
             if (state == Enums.AuthorizationState.Ready)
             {
-                var me = await GetMeAsync();
-                if (me.Type.GetType() != typeof(UserType.UserTypeBot))
+                _me = await GetMeAsync();
+                if (_me.Type.GetType() != typeof(UserType.UserTypeBot))
                     await _client.GetChatsAsync(null, 1000);
             }
             AuthorizationStateChanged?.Invoke(this, new(_client, state));

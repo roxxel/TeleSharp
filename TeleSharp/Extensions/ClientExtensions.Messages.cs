@@ -33,7 +33,8 @@ namespace TeleSharp
         {
             tgClient.EnsureClientReady();
             var client = tgClient._client;
-            await client.GetChatAsync(chatId);
+            if (chatId != 0)
+                await client.GetChatAsync(chatId);
 
             var text = parseMode == ParseMode.None ?
                 new FormattedText
@@ -51,7 +52,7 @@ namespace TeleSharp
                     ? new MessageSchedulingState.MessageSchedulingStateSendWhenOnline()
                     : new MessageSchedulingState.MessageSchedulingStateSendAtDate { SendDate = (int)scheduleDate };
 
-            return await client.SendMessageAsync(chatId, 0, replyToMessageId, sendOptions, markup?.markup, new InputMessageContent.InputMessageText
+            return await client.SendMessageAsync(chatId == 0 ? tgClient.CurrentUser.Id : chatId, 0, replyToMessageId, sendOptions, markup?.markup, new InputMessageContent.InputMessageText
             {
                 Text = text
             });
@@ -70,7 +71,8 @@ namespace TeleSharp
             tgClient.EnsureClientReady();
             var client = tgClient._client;
 
-            await client.GetChatAsync(chatId);
+            if (chatId != 0)
+                await client.GetChatAsync(chatId);
             var sendOptions = new MessageSendOptions
             {
                 DisableNotification = disableNotification,
@@ -80,7 +82,7 @@ namespace TeleSharp
                     ? new MessageSchedulingState.MessageSchedulingStateSendWhenOnline()
                     : new MessageSchedulingState.MessageSchedulingStateSendAtDate { SendDate = (int)scheduleDate };
 
-            return await client.ForwardMessagesAsync(chatId, fromChatId, messageIds.Select(x => x * 1048576L).ToArray(), sendOptions, hideSenderName, hideCaption);
+            return await client.ForwardMessagesAsync(chatId == 0 ? tgClient.CurrentUser.Id : chatId, fromChatId, messageIds.Select(x => x * 1048576L).ToArray(), sendOptions, hideSenderName, hideCaption);
         }
 
         public static async Task<Messages> ForwardMessages(this TelegramClient tgClient,
@@ -107,8 +109,8 @@ namespace TeleSharp
         {
             tgClient.EnsureClientReady();
             var client = tgClient._client;
-
-            await client.GetChatAsync(chatId);
+            if (chatId != 0)
+                await client.GetChatAsync(chatId);
 
             var text = parseMode == ParseMode.None ?
                new FormattedText
@@ -127,7 +129,7 @@ namespace TeleSharp
                     ? new MessageSchedulingState.MessageSchedulingStateSendWhenOnline()
                     : new MessageSchedulingState.MessageSchedulingStateSendAtDate { SendDate = (int)scheduleDate };
 
-            return await client.SendMessageAsync(chatId, 0, replyToMessageId, sendOptions, markup?.markup, new InputMessageContent.InputMessagePhoto
+            return await client.SendMessageAsync(chatId == 0 ? tgClient.CurrentUser.Id : chatId, 0, replyToMessageId, sendOptions, markup?.markup, new InputMessageContent.InputMessagePhoto
             {
                 Caption = text,
                 Photo = new InputFile.InputFileLocal { Path = photoPath }
