@@ -35,7 +35,7 @@ namespace TeleSharp
             _updateHandler = new UpdateHandler(this);
 
             _client = new TdClient();
-            _client.Bindings.SetLogVerbosityLevel(0);
+            _client.Bindings.SetLogVerbosityLevel(configuration.LogVerbosityLevel);
             Console.Clear();
             _client.UpdateReceived += OnUpdateReceived;
             _ = Task.Run(Authorize);

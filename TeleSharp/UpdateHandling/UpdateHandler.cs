@@ -21,7 +21,8 @@ namespace TeleSharp.UpdateHandling
             _tgClient = client;
             _signatures = new Dictionary<UpdateHandlerType, Type>()
             {
-                [UpdateHandlerType.Message] = typeof(Update.UpdateNewMessage)
+                [UpdateHandlerType.Message] = typeof(Update.UpdateNewMessage),
+                [UpdateHandlerType.UserStatusUpdated] = typeof(Update.UpdateUserStatus)
             };
             _handlers = new();
             Initialize();
@@ -75,9 +76,13 @@ namespace TeleSharp.UpdateHandling
 
         private Type GetRelatedTdUpdateType(UpdateHandlerType type)
         {
-            if (type == UpdateHandlerType.Message)
-                return typeof(Update.UpdateNewMessage);
-            return null;
+            return type switch
+            {
+                UpdateHandlerType.Message => typeof(Update.UpdateNewMessage),
+                UpdateHandlerType.UserStatusUpdated => typeof(Update.UpdateUserStatus),
+
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }

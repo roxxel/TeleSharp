@@ -25,5 +25,6 @@ namespace TeleSharp.Types
         string SystemVersion = "10",
         string ApplicationVersion = "1.0.0",
         bool EnableStorageOptimizer = true,
-        bool IgnoreFileNames = false);
+        bool IgnoreFileNames = false,
+        int LogVerbosityLevel = 0);
 }

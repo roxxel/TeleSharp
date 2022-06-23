@@ -19,6 +19,7 @@ namespace TeleSharp.UpdateHandling
 
     public enum UpdateHandlerType
     {
-        Message
+        Message,
+        UserStatusUpdated
     }
 }
