@@ -1,5 +1,3 @@
-# Project abandoned. I don't have enough time to work on this project. I'll continue development later
-
 # [WIP] TeleSharp
 Telergam MTProto Wrapper
 
