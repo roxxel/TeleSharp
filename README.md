@@ -1,5 +1,5 @@
 # [WIP] TeleSharp
-Telergam MTProto Wrapper
+Telegram MTProto Wrapper
 
 Refer to our [wiki](https://github.com/roxxel/TeleSharp/wiki) for more information 
 
