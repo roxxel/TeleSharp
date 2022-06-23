@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeleSharp.UpdateHandling
 {
-    public class BaseUpdateHandlerModule
+    public abstract class BaseUpdateHandlerModule
     {
     }
 }
