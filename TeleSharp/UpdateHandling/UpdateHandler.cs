@@ -25,7 +25,6 @@ namespace TeleSharp.UpdateHandling
                 [UpdateHandlerType.UserStatusUpdated] = typeof(Update.UpdateUserStatus)
             };
             _handlers = new();
-            Initialize();
         }
 
 
@@ -43,37 +42,39 @@ namespace TeleSharp.UpdateHandling
             await Task.CompletedTask;
         }
 
-        private void Initialize()
+        internal void RegisterHandler<T>() where T : BaseUpdateHandlerModule
         {
-            var asm = Assembly.GetEntryAssembly();
-            var types = asm.GetTypes().Where(x => x.IsPublic && x.BaseType == typeof(BaseUpdateHandlerModule)).ToArray();
-            foreach (var type in types)
-            {
-                if (!type.GetConstructors().Any(x => x.IsPublic && x.GetParameters().Length == 0))
-                    throw new Exception($"{type.FullName} must have at least one public parameterless constructor");
-                var methods = type.GetMethods().Where(x => x.GetCustomAttribute<UpdateHandlerAttribute>() != null && x.IsPublic);
-                foreach (var method in methods)
-                {
-                    var attr = method.GetCustomAttribute<UpdateHandlerAttribute>();
-                    var @params = method.GetParameters();
-                    var signature = _signatures[attr.Type];
-                    if (method.ReturnType != typeof(Task))
-                        throw new Exception($"{method.Name} must have return type of System.Threading.Tasks.Task");
-                    if (@params.Length != 2)
-                        throw new Exception($"{method.Name} expected parameters count 2");
-                    if (@params[0].ParameterType != typeof(TelegramClient) || @params[1].ParameterType != signature)
-                        throw new Exception($"{method.Name} have invalid signature. Expected (TelegramClient, {signature.Name})");
-                    _handlers.Add(new()
-                    {
-                        ContainingType = Activator.CreateInstance(type),
-                        Method = method,
-                        TdUpdateType = GetRelatedTdUpdateType(attr.Type),
-                        Type = attr.Type
-                    });
-                }
-            }
+            var type = typeof(T);
+            RegisterHandler(type);
         }
 
+        internal void RegisterHandler(Type type)
+        {
+            if (!typeof(BaseUpdateHandlerModule).IsAssignableFrom(type))
+                throw new Exception("Invalid handler type (Handler must inherited from BaseUpdateHandlerModule)");
+            if (!type.GetConstructors().Any(x => x.IsPublic && x.GetParameters().Length == 0))
+                throw new Exception($"{type.FullName} must have at least one public parameterless constructor");
+            var methods = type.GetMethods().Where(x => x.GetCustomAttribute<UpdateHandlerAttribute>() != null && x.IsPublic);
+            foreach (var method in methods)
+            {
+                var attr = method.GetCustomAttribute<UpdateHandlerAttribute>();
+                var @params = method.GetParameters();
+                var signature = _signatures[attr.Type];
+                if (method.ReturnType != typeof(Task))
+                    throw new Exception($"{method.Name} must have return type of System.Threading.Tasks.Task");
+                if (@params.Length != 2)
+                    throw new Exception($"{method.Name} expected parameters count 2");
+                if (@params[0].ParameterType != typeof(TelegramClient) || @params[1].ParameterType != signature)
+                    throw new Exception($"{method.Name} have invalid signature. Expected (TelegramClient, {signature.Name})");
+                _handlers.Add(new()
+                {
+                    ContainingType = Activator.CreateInstance(type),
+                    Method = method,
+                    TdUpdateType = GetRelatedTdUpdateType(attr.Type),
+                    Type = attr.Type
+                });
+            }
+        }
         private Type GetRelatedTdUpdateType(UpdateHandlerType type)
         {
             return type switch

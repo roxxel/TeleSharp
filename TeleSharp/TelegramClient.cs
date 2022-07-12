@@ -28,25 +28,38 @@ namespace TeleSharp
         private bool isBot => _configuration.BotToken != null;
 
         private readonly UpdateHandler _updateHandler;
-        internal readonly TdClient _client;
+        internal TdClient _client;
         public TelegramClient(TelegramConfiguration configuration)
         {
             _configuration = configuration;
             if (string.IsNullOrEmpty(configuration.SessionName))
                 throw new ArgumentNullException(nameof(configuration.SessionName));
             _updateHandler = new UpdateHandler(this);
-
-            _client = new TdClient();
-            _client.Bindings.SetLogVerbosityLevel(configuration.LogVerbosityLevel);
-            Console.Clear();
-            _client.UpdateReceived += OnUpdateReceived;
-            _ = Task.Run(Authorize);
         }
 
         public event EventHandler<Types.AuthorizationStateChangedEventArgs> AuthorizationStateChanged;
 
         public TdClient RawClient => _client;
         public User CurrentUser => _me;
+
+        public async Task StartAsync()
+        {
+            _client = new TdClient();
+            _client.Bindings.SetLogVerbosityLevel(_configuration.LogVerbosityLevel);
+            if (_configuration.LogVerbosityLevel != 0)
+                Console.Clear();
+            _client.UpdateReceived += OnUpdateReceived;
+            _ = Task.Run(Authorize);
+        }
+        public void RegisterUpdateHandler<T>() where T : BaseUpdateHandlerModule
+        {
+            _updateHandler.RegisterHandler<T>();
+        }
+
+        public void RegisterUpdateHandler(Type type)
+        {
+            _updateHandler.RegisterHandler(type);
+        }
 
         public async Task<User> GetMeAsync()
         {
