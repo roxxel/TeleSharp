@@ -5,11 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TDLib" Version="1.8.1" />
-    <PackageReference Include="tdlib.native" Version="1.8.1" />
-	  <ProjectReference Include="..\TeleSharp.SourceGenerators\TeleSharp.SourceGenerators.csproj"
-					   OutputItemType="Analyzer"
-					   ReferenceOutputAssembly="true" />
+    <PackageReference Include="TDLib" Version="1.8.12" />
+    <PackageReference Include="tdlib.native" Version="1.8.12" />
+	  <ProjectReference Include="..\TeleSharp.SourceGenerators\TeleSharp.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
   </ItemGroup>
 
 </Project>

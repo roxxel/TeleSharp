@@ -132,8 +132,6 @@ namespace TeleSharp
 
                         await _client.ExecuteAsync(new TdApi.SetTdlibParameters
                         {
-                            Parameters = new TdApi.TdlibParameters
-                            {
                                 ApiId = _configuration.ApiId,
                                 ApiHash = _configuration.ApiHash,
                                 ApplicationVersion = _configuration.ApplicationVersion,
@@ -149,13 +147,9 @@ namespace TeleSharp
                                 UseMessageDatabase = _configuration.UseMessageDatabase,
                                 UseSecretChats = _configuration.UseSecretChats,
                                 UseTestDc = _configuration.UseTestDc
-                            }
                         });
                         break;
                     }
-                case TdApi.Update.UpdateAuthorizationState updateAuthorizationState when updateAuthorizationState.AuthorizationState.GetType() == typeof(TdApi.AuthorizationState.AuthorizationStateWaitEncryptionKey):
-                    await _client.ExecuteAsync(new TdApi.CheckDatabaseEncryptionKey());
-                    break;
                 case TdApi.Update.UpdateAuthorizationState updateAuthorizationState when updateAuthorizationState.AuthorizationState.GetType() == typeof(TdApi.AuthorizationState.AuthorizationStateWaitPhoneNumber):
                     _authNeeded = true;
                     _resetEvent.Set();
