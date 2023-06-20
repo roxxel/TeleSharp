@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <Title>Telegram TDLib Api</Title>
+    <Company>Roxxel</Company>
+    <Description>Telegram TDLib Api</Description>
+    <PackageProjectUrl>https://github.com/roxxel/TeleSharp</PackageProjectUrl>
+    <PackageId>Roxxel.TeleSharp</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

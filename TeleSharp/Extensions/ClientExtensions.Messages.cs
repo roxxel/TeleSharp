@@ -82,7 +82,14 @@ namespace TeleSharp
                     ? new MessageSchedulingState.MessageSchedulingStateSendWhenOnline()
                     : new MessageSchedulingState.MessageSchedulingStateSendAtDate { SendDate = (int)scheduleDate };
 
-            return await client.ForwardMessagesAsync(chatId == 0 ? tgClient.CurrentUser.Id : chatId, fromChatId, messageIds.Select(x => x * 1048576L).ToArray(), sendOptions, hideSenderName, hideCaption);
+            return await client.ForwardMessagesAsync(
+                chatId == 0 ? tgClient.CurrentUser.Id : chatId,
+                0,
+                fromChatId,
+                messageIds.Select(x => x * 1048576L).ToArray(), 
+                sendOptions, 
+                hideSenderName, 
+                hideCaption);
         }
 
         public static async Task<Messages> ForwardMessages(this TelegramClient tgClient,
