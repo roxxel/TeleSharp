@@ -1,3 +1,6 @@
+# Notice
+If you're looking for Bot API SDK check out [TeleSharpX](https://github.com/roxxel/telesharpx)
+
 # [WIP] TeleSharp
 Telegram MTProto Wrapper
 
